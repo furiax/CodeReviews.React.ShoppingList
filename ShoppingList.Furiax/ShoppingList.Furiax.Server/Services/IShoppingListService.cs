@@ -8,6 +8,6 @@ namespace ShoppingList.Furiax.Server.Services
         public Item? GetItemById(int id);
         public Item AddItem(Item item);
         public Item UpdateItem(Item item);
-        public Item? DeleteItem(int id);
+        public string? DeleteItem(int id);
     }
 }
