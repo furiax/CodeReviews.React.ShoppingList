@@ -4,11 +4,18 @@ import Item from "./Item.jsx"
 
 function App() {
     const [items, setItems] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [itemName, setItem] = useState('');
+    const [quantity, setQuantity] = useState(1);
 
+    useEffect(() => {
+        if (showModal) {
+            console.log("Modal is showing, focusing on the item name input");
+            document.querySelector('input[type="text"]').focus();
+        }
+    }, [showModal]);
+    
     useEffect(()=>{
-        /*fetch('https://localhost:7011/api/ShoppingList')
-        .then(res => res.json())
-        .then(data => setItems(data))*/
         fetchData();
     },[])
 
@@ -25,13 +32,26 @@ function App() {
             console.log(error);
         }
     }
-    const addNewItem = async (newItem) =>{
+    const addNewItem = async (e) =>{
+        e.preventDefault();
+        if(!itemName.trim()){
+            alert("Item name is required");
+            return;
+        }
+        const newItem = {itemName, quantity};
+
         try{
-            const response = await fetch('https://localhost:7011/api/ShoppingList', {method:'POST', headers:{'Content-Type':'application/json'},body: JSON.stringify(newItem)
+            const response = await fetch('https://localhost:7011/api/ShoppingList', {
+                method:'POST', 
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify(newItem)
             });
             if(!response.ok){
                 throw new Error('Failed to add item');
             }
+            setShowModal(false);
+            setItem('');
+            setQuantity('1');
             fetchData();
         }
         catch(error){
@@ -42,7 +62,10 @@ function App() {
         <>
         <div className='container'>
             <h1>Shopping List</h1>
-            <button onClick={()=>addNewItem({itemName:'test'})}>+ Add Item</button>
+            <button onClick={()=>
+                setShowModal(true)}>
+                    + Add Item
+            </button>
             <table>
                 <thead>
                     <tr>
@@ -63,6 +86,44 @@ function App() {
                 </tbody>
             </table>
         </div>
+        {showModal && (
+            <div className={`modal fade ${showModal ? 'show': ''}`} tabIndex="-1">
+                <div className='modal-dialog'>
+                    <div className='modal-header'>
+                        <h2 className='modal-title'>Add new item</h2>
+                        <button type="button" className='btn-close' onClick={()=> setShowModal(false)}></button>
+                    </div>
+                    <div className='modal-body'>
+                        <form onSubmit={addNewItem}>
+                            <div className='mb-3'>
+                                <label className="form-label">Item name:</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={itemName}
+                                    onChange={(e) => setItem(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label">Quantity:</label>
+                                <input
+                                    type="number"
+                                    className="form-control"
+                                    value={quantity}
+                                    onChange={(e) => setQuantity(e.target.value)}
+                                    min="1"
+                                    required
+                                />
+                            </div>
+                            <button type="submit" className="btn btn-primary">Add</button>
+                            <button type="button" className="btn btn-secondary ms-2" onClick={() => setShowModal(false)}>Close</button>
+                        
+                        </form>
+                    </div>
+                </div>
+            </div>
+        )}
         </>
     );
 }

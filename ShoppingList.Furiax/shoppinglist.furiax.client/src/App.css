@@ -9,3 +9,61 @@ th, td {
     padding-left: 1rem;
     padding-right: 1rem;
 }
+.modal.fade {
+    pointer-events: none;
+    display: none; /* Hide modal by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 1050; /* Ensure modal is above other content */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    pointer-events: auto;
+    display: flex; /* Show the modal when the class 'show' is applied */
+}
+
+.modal-dialog {
+    pointer-events: auto;
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto; /* Center the modal */
+    z-index: 1060; /* Ensure modal content appears on top */
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 10px;
+}
+
+.modal-title {
+    margin: 0;
+}
+
+.btn-close {
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.form-control {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.btn {
+    padding: 8px 15px;
+}
