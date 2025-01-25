@@ -2,10 +2,13 @@ export default function Item({id, name, quantity, isPicked}){
     return(
         <>
             <tr>
-                <td>{id}.</td>
-                <td>{quantity}x</td>
+                <td><input type="checkbox" checked={isPicked}/></td>
                 <td>{name}</td>
-                <td>{isPicked}</td>
+                <td>{quantity}</td>
+                <td>
+                    <button>Edit</button>
+                    <button>Delete</button>
+                </td>
             </tr>
         </>
     )
