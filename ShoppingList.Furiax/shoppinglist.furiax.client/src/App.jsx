@@ -5,12 +5,13 @@ import Item from "./Item.jsx"
 function App() {
     const [items, setItems] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [itemName, setItem] = useState('');
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [itemName, setItemName] = useState('');
     const [quantity, setQuantity] = useState(1);
+    const [currentItemId, setCurrentItemId] = useState(null);
 
     useEffect(() => {
         if (showModal) {
-            console.log("Modal is showing, focusing on the item name input");
             document.querySelector('input[type="text"]').focus();
         }
     }, [showModal]);
@@ -32,7 +33,7 @@ function App() {
             console.log(error);
         }
     }
-    const addNewItem = async (e) =>{
+    const handleAddNewItem = async (e) =>{
         e.preventDefault();
         if(!itemName.trim()){
             alert("Item name is required");
@@ -49,21 +50,56 @@ function App() {
             if(!response.ok){
                 throw new Error('Failed to add item');
             }
-            setShowModal(false);
-            setItem('');
-            setQuantity('1');
+            closeModal();
             fetchData();
         }
         catch(error){
             console.log(error);
         }
     }
+    const handleEditItem = async (e) => {
+        e.preventDefault();
+        if(!itemName.trim()){
+            alert("Item name is required");
+            return;
+        }
+        const updatedItem = {id: currentItemId, itemName, quantity};
+        try{
+            const response = await fetch(`https://localhost:7011/api/ShoppingList/`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedItem),
+            });
+            if(!response.ok){
+                throw new Error("Failed to update item");
+            }
+            closeModal();
+            fetchData();
+        }catch(error){
+            console.log(error);
+        }
+    }
+    const openEditModal = (id, itemName, quantity) =>{
+        setCurrentItemId(id);
+        setItemName(itemName);
+        setQuantity(quantity);
+        setIsEditMode(true);
+        setShowModal(true);
+    };
+    const closeModal = () => {
+        setShowModal(false);
+        setIsEditMode(false);
+        setItemName('');
+        setQuantity(1);
+        setCurrentItemId(null);
+    }
     return (
         <>
         <div className='container'>
             <h1>Shopping List</h1>
-            <button onClick={()=>
-                setShowModal(true)}>
+            <button onClick={()=>{
+                setIsEditMode(false);
+                setShowModal(true)}}>
                     + Add Item
             </button>
             <table>
@@ -77,11 +113,14 @@ function App() {
                 </thead>
                 <tbody>
                     {items ? ( items.map((item) =>(
-                    <Item key={item.id}
-                    name={item.itemName}
-                    quantity={item.quantity}
-                    isPicked={item.isPicked}
-                    />))
+                        <Item key={item.id}
+                        id={item.id}
+                        name={item.itemName}
+                        quantity={item.quantity}
+                        isPicked={item.isPicked}
+                        onEdit={openEditModal}
+                        />
+                        ))
                     ) : <p>Loading items...</p>}
                 </tbody>
             </table>
@@ -90,18 +129,18 @@ function App() {
             <div className={`modal fade ${showModal ? 'show': ''}`} tabIndex="-1">
                 <div className='modal-dialog'>
                     <div className='modal-header'>
-                        <h2 className='modal-title'>Add new item</h2>
-                        <button type="button" className='btn-close' onClick={()=> setShowModal(false)}></button>
+                        <h2 className='modal-title'>{isEditMode ? 'Edit item' : "Add new item"}</h2>
+                        <button type="button" className='btn-close' onClick={closeModal}></button>
                     </div>
                     <div className='modal-body'>
-                        <form onSubmit={addNewItem}>
+                        <form onSubmit={isEditMode ? handleEditItem : handleAddNewItem}>
                             <div className='mb-3'>
                                 <label className="form-label">Item name:</label>
                                 <input
                                     type="text"
                                     className="form-control"
                                     value={itemName}
-                                    onChange={(e) => setItem(e.target.value)}
+                                    onChange={(e) => setItemName(e.target.value)}
                                     required
                                 />
                             </div>
@@ -116,8 +155,8 @@ function App() {
                                     required
                                 />
                             </div>
-                            <button type="submit" className="btn btn-primary">Add</button>
-                            <button type="button" className="btn btn-secondary ms-2" onClick={() => setShowModal(false)}>Close</button>
+                            <button type="submit" className="btn btn-primary">{isEditMode ? "Edit" : "Add"}</button>
+                            <button type="button" className="btn btn-secondary ms-2" onClick={closeModal}>Close</button>
                         
                         </form>
                     </div>
