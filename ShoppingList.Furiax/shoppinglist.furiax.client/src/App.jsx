@@ -79,6 +79,38 @@ function App() {
             console.log(error);
         }
     }
+    const handleDelete = async (id) =>{
+        if(!window.confirm("Are you sure you want to delete this item ?")){
+            return;
+        }
+        try{
+            const response = await fetch(`https://localhost:7011/api/ShoppingList/${id}`, {
+                method: 'DELETE',
+            });
+            if(!response.ok){
+                throw new Error(`Failed to delete item with id ${id}`);
+            }
+            fetchData();
+        }catch(error){
+            console.log(error);
+        }
+    }
+    const handleDeleteAll = async () => {
+        if(!window.confirm("Are you sure you want to delete ALL items ?")){
+            return;
+        }
+        try{
+            const response = await fetch('https://localhost:7011/api/ShoppingList/DeleteAll', {
+                method: 'DELETE',
+            });
+            if(!response.ok){
+                throw new Error("Failed to delete all items");
+            }
+            fetchData();
+        }catch(error){
+            console.log(error);
+        }
+    }
     const openEditModal = (id, itemName, quantity) =>{
         setCurrentItemId(id);
         setItemName(itemName);
@@ -102,6 +134,7 @@ function App() {
                 setShowModal(true)}}>
                     + Add Item
             </button>
+            <button onClick={handleDeleteAll}>Clear List</button>
             <table>
                 <thead>
                     <tr>
@@ -119,6 +152,7 @@ function App() {
                         quantity={item.quantity}
                         isPicked={item.isPicked}
                         onEdit={openEditModal}
+                        onDelete={handleDelete}
                         />
                         ))
                     ) : <p>Loading items...</p>}
@@ -130,7 +164,7 @@ function App() {
                 <div className='modal-dialog'>
                     <div className='modal-header'>
                         <h2 className='modal-title'>{isEditMode ? 'Edit item' : "Add new item"}</h2>
-                        <button type="button" className='btn-close' onClick={closeModal}></button>
+                        <button type="button" className='btn btn-close' onClick={closeModal}>x</button>
                     </div>
                     <div className='modal-body'>
                         <form onSubmit={isEditMode ? handleEditItem : handleAddNewItem}>
@@ -155,7 +189,7 @@ function App() {
                                     required
                                 />
                             </div>
-                            <button type="submit" className="btn btn-primary">{isEditMode ? "Edit" : "Add"}</button>
+                            <button type="submit" className="btn btn-primary">{isEditMode ? "Save Changes" : "Add"}</button>
                             <button type="button" className="btn btn-secondary ms-2" onClick={closeModal}>Close</button>
                         
                         </form>

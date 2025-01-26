@@ -51,4 +51,14 @@ public class ShoppingListController(IShoppingListService shoppingService) : Cont
         }
         return Ok(result);
     }
+    [HttpDelete("DeleteAll")]
+    public ActionResult DeleteAllItems()
+    {
+        var result = _shopService.DeleteAllItems();
+        if(!result)
+        {
+            return NotFound();
+        }
+        return Ok();
+    }
 }

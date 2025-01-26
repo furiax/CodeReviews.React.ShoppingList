@@ -1,4 +1,4 @@
-export default function Item({id, name, quantity, isPicked, onEdit}){
+export default function Item({id, name, quantity, isPicked, onEdit, onDelete}){
     return(
         <>
             <tr>
@@ -7,7 +7,7 @@ export default function Item({id, name, quantity, isPicked, onEdit}){
                 <td>{quantity}</td>
                 <td>
                     <button onClick={()=>onEdit(id, name, quantity)}>Edit</button>
-                    <button>Delete</button>
+                    <button onClick={()=>onDelete(id)}>Delete</button>
                 </td>
             </tr>
         </>

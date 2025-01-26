@@ -52,4 +52,10 @@ public class ShoppingListService : IShoppingListService
         Context.SaveChanges();
         return itemToEdit;
     }
+    public bool DeleteAllItems()
+    {
+        var items = Context.Items.ToList();
+        Context.Items.RemoveRange(items);
+        return Context.SaveChanges() > 0;
+    }
 }

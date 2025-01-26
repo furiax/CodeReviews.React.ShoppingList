@@ -9,4 +9,5 @@ public interface IShoppingListService
     public Item AddItem(Item item);
     public Item UpdateItem(Item item);
     public string? DeleteItem(int id);
+    public bool DeleteAllItems();
 }
